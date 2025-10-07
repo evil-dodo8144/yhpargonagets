@@ -1,0 +1,22 @@
+[
+    {
+        "cover": "Debayan",
+        "secret": "hi",
+        "stego": "Debayan \t\t \t    \t\t \t  \t"
+    },
+    {
+        "cover": "hello",
+        "secret": "debayan",
+        "stego": "hello \t\t  \t   \t\t  \t \t \t\t   \t  \t\t    \t \t\t\t\t  \t \t\t    \t \t\t \t\t\t "
+    },
+    {
+        "cover": "helo",
+        "secret": "debayan",
+        "stego": "helo \t\t  \t   \t\t  \t \t \t\t   \t  \t\t    \t \t\t\t\t  \t \t\t    \t \t\t \t\t\t "
+    },
+    {
+        "cover": "Debayan",
+        "secret": "hi",
+        "stego": "Debayan \t\t \t    \t\t \t  \t"
+    }
+]

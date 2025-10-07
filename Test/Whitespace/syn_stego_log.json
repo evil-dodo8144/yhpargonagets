@@ -1,0 +1,13 @@
+{
+    "1": {
+        "encoded_text": "small",
+        "log": {
+            "0": {
+                "original": "small",
+                "encoded": "small",
+                "bit": "0"
+            }
+        },
+        "secret_msg": "debayan"
+    }
+}
