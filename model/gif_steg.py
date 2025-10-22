@@ -1,7 +1,6 @@
 import numpy as np
 from PIL import Image, ImageSequence
-import argparse
-import sys
+import os
 
 class GIFSteganography:
     def __init__(self):
@@ -27,6 +26,9 @@ class GIFSteganography:
             # Encode the message in the frames
             encoded_frames = self._encode_in_frames(frames, binary_msg)
             
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
             # Save the new GIF
             encoded_frames[0].save(
                 output_path,
@@ -37,10 +39,10 @@ class GIFSteganography:
                 disposal=2  # Restore to background
             )
             
-            print(f"Message successfully encoded in {output_path}")
+            print(f"✅ Message successfully encoded in: {output_path}")
             
         except Exception as e:
-            print(f"Error encoding message: {e}")
+            print(f"❌ Error encoding message: {e}")
     
     def decode_message(self, gif_path):
         """Decode a message from a GIF file"""
@@ -60,7 +62,7 @@ class GIFSteganography:
             return message
             
         except Exception as e:
-            print(f"Error decoding message: {e}")
+            print(f"❌ Error decoding message: {e}")
             return None
     
     def _message_to_binary(self, message):
@@ -124,7 +126,6 @@ class GIFSteganography:
                         # Modify the least significant bit of each color channel
                         for c in range(3):  # R, G, B channels
                             if msg_index < msg_length:
-                                # Clear the LSB and set it to our message bit
                                 img_array[y, x, c] = (img_array[y, x, c] & 0xFE) | int(binary_msg[msg_index])
                                 msg_index += 1
                     else:
@@ -142,23 +143,18 @@ class GIFSteganography:
         found_end = False
         
         for frame in frames:
-            # Convert frame to RGB if needed
             if frame.mode != 'RGB':
                 frame = frame.convert('RGB')
             
             img_array = np.array(frame)
             height, width, _ = img_array.shape
             
-            # Extract message from this frame
             for y in range(height):
                 for x in range(width):
-                    for c in range(3):  # R, G, B channels
-                        # Extract the LSB
+                    for c in range(3):
                         binary_msg += str(img_array[y, x, c] & 1)
                         
-                        # Check if we've read enough to decode the header
                         if len(binary_msg) >= 88:  # 11 bytes * 8 bits
-                            # Verify if we have a valid header
                             try:
                                 self._binary_to_message(binary_msg)
                                 found_end = True
@@ -177,32 +173,25 @@ class GIFSteganography:
         
         return binary_msg
 
+
 def main():
-    parser = argparse.ArgumentParser(description="GIF Steganography Tool")
-    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
-    
-    # Encode command
-    encode_parser = subparsers.add_parser('encode', help='Encode a message in a GIF')
-    encode_parser.add_argument('input', nargs='?', default='input.gif', help='Input GIF file (default: input.gif)')
-    encode_parser.add_argument('message', help='Message to encode')
-    encode_parser.add_argument('output', help='Output GIF file')
-    
-    # Decode command
-    decode_parser = subparsers.add_parser('decode', help='Decode a message from a GIF')
-    decode_parser.add_argument('input', nargs='?', default='input.gif', help='Input GIF file (default: input.gif)')
-    
-    args = parser.parse_args()
-    
     steg = GIFSteganography()
+
+    # ✅ Fixed paths for input and output
+    input_path = r"D:\Debayan\yhpargonagets\model\input.gif"
+    output_path = r"D:\Debayan\yhpargonagets\model\output.gif"
+
+    # 👇 USER INPUT MESSAGE LINE
+    message = input("Enter the message to encode inside GIF: ")
+
+    steg.encode_message(input_path, message, output_path)
     
-    if args.command == 'encode':
-        steg.encode_message(args.input, args.message, args.output)
-    elif args.command == 'decode':
-        message = steg.decode_message(args.input)
-        if message:
-            print(f"Decoded message: {message}")
-    else:
-        parser.print_help()
+    # Optional decode check
+    print("\nNow decoding to verify...")
+    decoded_msg = steg.decode_message(output_path)
+    if decoded_msg:
+        print(f"🔍 Decoded message: {decoded_msg}")
+
 
 if __name__ == "__main__":
     main()
